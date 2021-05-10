@@ -34,7 +34,7 @@ pip3 install -r App/requirements.txt
 ```
 ### Arduino
 
-### To run Fotomatex, run
+### To run Fotomatex
 ```sh
 python3 App/main.py
 ```
