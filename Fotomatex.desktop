@@ -1,0 +1,12 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=8.0
+Type=Application
+Terminal=false
+Icon[en_US]=PATH/img/icon.png
+Name[en_US]=Fotomatex-V8
+Exec=python3 PATH/App/main.py
+Comment[en_US]=Fotomatex. Version8. by(javimogan)
+Name=Fotomatex
+Comment=Fotomatex. Version7.  by(javimogan)
+Icon=PATH/img/icon.png
