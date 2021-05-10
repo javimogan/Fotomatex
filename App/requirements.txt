@@ -1,0 +1,5 @@
+PyQt5==5.15.4
+gphoto2==2.2.4
+serial==0.0.97
+pyserial==3.5
+pyudev==0.22.0
