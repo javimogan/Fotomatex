@@ -1,102 +1,81 @@
 """
-    Esta clase es la encargada de interactuar con la camara
+    @javimogan - JAVIER ALONSO DIAZ
+
+    Interact with the camera
 
 """
 
-# sudo apt-get install libgphoto2-dev
 import gphoto2 as gp
 
-
-import serial
-import threading
-
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QThread
 from PyQt5 import QtCore
 import pyudev
 
+import datetime
+import os
 
-
-import datetime, os
 
 class Camara(QtCore.QThread):
+    emit_signal = QtCore.pyqtSignal(object)
 
-    emitirSignal = QtCore.pyqtSignal(object)
-
-    #Constructor
-    def __init__(self, _rutaFotos):
+    # Constructor
+    def __init__(self, _gallery_path):
         QtCore.QThread.__init__(self)
+        self.context = pyudev.Context()
+        self.monitor = pyudev.Monitor.from_netlink(self.context)
         self.camara = gp.check_result(gp.gp_camera_new())
-        self.rutaFotos = _rutaFotos
-
+        self.gallery_path = _gallery_path
 
     def run(self):
-        print("Run de la camara")
-        if(self.conectarCamara()):
-            #Emitir señal
-            print("\n\n Camara conectada \n\n")
-            self.emitirSignal.emit('')
+        print("CameraRun")
+        if self.connect_camera():
+            # Emit the signal
+            print("\n\n Camera is connected \n\n")
+            self.emit_signal.emit('')
         else:
-            """thread = threading.Thread(target=self.threadConexion)
-            thread.daemon = True
-            thread.start()"""
-            self.threadConexion()
+            self.thread_connection()
 
+    def set_gallery_path(self, _new_path):
+        self.gallery_path = _new_path
 
-    def setRutaFotos(self, _rutaNueva):
-        self.rutaFotos = _rutaNueva
-    #Conexion con la camara
-    def conectarCamara(self):
-        mensaje = True
+    def connect_camera(self):
         try:
-            # gphoto2 version 2.5+
             gp.check_result(gp.gp_camera_init(self.camara))
-                #Aqui la camara ya esta conectada e identificada
-            #Mostramos la informacion de la camara
-            print(" ** Camara detectada ** ")
+            print(" ** Camera detected ** ")
             print(gp.check_result(gp.gp_camera_get_about(self.camara)))
             return True
         except gp.GPhoto2Error as ex:
-            if ex.code == gp.GP_ERROR_MODEL_NOT_FOUND and mensaje:
-                print("Por favor, conecte una cámara")
-                mensaje = False
+            if ex.code == gp.GP_ERROR_MODEL_NOT_FOUND:
+                print("Please, connect a camera")
             return False
-       
 
-
-    def threadConexion(self):
-        self.context = pyudev.Context()
-        self.monitor = pyudev.Monitor.from_netlink(self.context)
+    def thread_connection(self):
         self.monitor.filter_by(subsystem='usb')
         self.monitor.start()
         for device in iter(self.monitor.poll, None):
-            if(self.conectarCamara()):
-                #Emitir señal
-                print("\n\n Camara conectada \n\n")
-                self.emitirSignal.emit('')
+            if self.connect_camera():
+                # Emit signal
+                print("\n\n Camera is connected \n\n")
+                self.emit_signal.emit('')
                 return
 
-    def hacerFoto(self):
+    def take_photo(self):
         try:
             file_path = gp.check_result(gp.gp_camera_capture(self.camara, gp.GP_CAPTURE_IMAGE))
 
-            #Damos el nombre a la foto con la Hora-minuto-Segundo-Fecha
-            hora = datetime.datetime.now()
-            nombreFoto = "%s:%s:%s(%s).jpg" %(hora.hour, hora.minute, hora.second,hora.date())
-            
-            #Ruta donde se almacenara la foto
-            ruta = os.path.join(self.rutaFotos, nombreFoto)
-            #print(ruta)
-            #print(self.rutaFotos)
-            #Capturar foto
-            camera_file = gp.check_result(gp.gp_camera_file_get(self.camara, file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL))
-            
-            #Guardar la foto en la ruta
-            gp.gp_file_save(camera_file, ruta)
+            hour = datetime.datetime.now()
+            photo_name = "%s:%s:%s(%s).jpg" % (hour.hour, hour.minute, hour.second, hour.date())
+
+            path = os.path.join(self.gallery_path, photo_name)
+
+            # Take photo
+            camera_file = gp.check_result(
+                gp.gp_camera_file_get(self.camara, file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL))
+
+            # Save the photo in the path
+            gp.gp_file_save(camera_file, path)
 
             return True
         except gp.GPhoto2Error as ex:
-                if ex.code == gp.GP_ERROR:
-                        print("Ha ocurrido un error al realizar la foto.")
-                        return False
-
-        
+            if ex.code == gp.GP_ERROR:
+                print("An error occurred while taking the photo.")
+                return False

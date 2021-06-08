@@ -1,7 +1,7 @@
-
 """
+    @javimogan - JAVIER ALONSO DIAZ
 
-    Nueva ventana para selccionar la ruta donde se almacenaran las fotos
+    New windows to select the path where the images are stored
 
 """
 
@@ -9,45 +9,44 @@ from PyQt5.QtWidgets import QWidget, QFileDialog
 
 from variables import Variables
 
-class Ruta(QWidget):
- 
-    def __init__(self, _rutaFotos):
+
+class GalleryPath(QWidget):
+
+    def __init__(self, _gallery_path):
         super().__init__()
 
-        self.variablesGlobales = Variables()
-        self.rutaArchivo = "%s%s" %(self.variablesGlobales.ruta,"ruta.txt")
+        self.global_variables = Variables()
+        self.path_file = "%s%s" % (self.global_variables.ruta, "path.txt")
         self.title = 'javimogan'
         self.left = 10
         self.top = 10
         self.width = 640
         self.height = 480
 
+        self.gallery_path = _gallery_path
 
-        self.rutaFotos = _rutaFotos
+        self.init_ui()
 
-        self.initUI()
-        
-    def initUI(self):
+    def init_ui(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-    
-    def openFileNameDialog(self):
-        fileName =QFileDialog.getExistingDirectory(self, '¿Dónde desea guardar las fotos?')
-        f= open(self.rutaArchivo,"w+")
-        f.write(fileName)
-        f.close() 
-        self.cambiarRutaFotos()
-        
-    def getRutaFotos(self):
-        return self.rutaFotos
 
-    def cambiarRutaFotos(self):
-        
-        f= open(self.rutaArchivo,"r+")
-        
-        self.rutaFotos = f.read()
-        f.close() 
-        if(self.rutaFotos == ''):
-                self.openFileNameDialog()
+    def open_file_name_dialog(self):
+        file_name = QFileDialog.getExistingDirectory(self, '¿Dónde desea guardar las fotos?')
+        f = open(self.path_file, "w+")
+        f.write(file_name)
+        f.close()
+        self.change_gallery_path()
 
-        return self.rutaFotos
+    def get_gallery_path(self):
+        return self.gallery_path
+
+    def change_gallery_path(self):
+        f = open(self.path_file, "r+")
+
+        self.gallery_path = f.read()
+        f.close()
+        if self.gallery_path == '':
+            self.open_file_name_dialog()
+
+        return self.gallery_path

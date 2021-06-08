@@ -33,6 +33,9 @@ To install Python dependencies, run the following command.
 pip3 install -r App/requirements.txt
 ```
 ### Arduino
+You must connect a button with a pull-down resistor.
+You can connect two LEDs, one indicating the unlocked state which allows you to press the button to take a photo, and the other indicating the locked state, in which we will have to wait.
+
 
 ### To run Fotomatex
 ```sh

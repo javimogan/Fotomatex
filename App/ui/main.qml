@@ -174,7 +174,7 @@ Window {
         height: Window.height
 
         Text {
-            objectName: "titulo"
+            objectName: "title"
             id: text1
             color: "#ffffff"
             text: qsTr("Pulsa el botón")
@@ -213,7 +213,7 @@ Window {
 
     Text {
         id: text2
-        objectName: "cuenta"
+        objectName: "counter"
         color: "#ffffff"
         text: qsTr("5")
         visible: false
@@ -282,3 +282,9 @@ Window {
     }
 
 }
+
+/*##^##
+Designer {
+    D{i:22;invisible:true}
+}
+##^##*/

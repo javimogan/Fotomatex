@@ -1,8 +1,9 @@
 """
+    @javimogan - JAVIER ALONSO DIAZ
 
-    Manejo de la interfaz
-    Actualizacion de foto
-    Cuenta atras
+    Interface management
+    Update the photo
+    CountDown
     ...
 
 """
@@ -14,27 +15,27 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import *
 
 
-class manejoInterfaz:
+class InterfaceHandler:
 
-    def __init__(self, _rutaFotos, _camara, _interfazArduino, _titulo, _cuenta, _img1, _img2, _img3, _img4,
-                 _camaraControl, _botonControl):
+    def __init__(self, _gallery_path, _camera, _arduino_interface, _title, _counter, _img1, _img2, _img3, _img4,
+                 _camera_control, _button_control):
 
-        self.camaraControl = _camaraControl
-        self.botonControl = _botonControl
+        self.camera_control = _camera_control
+        self.buttonControl = _button_control
 
-        self.cuentaAtras = QtCore.QTimer()
-        self.cuentaAtras.setInterval(1000)
-        self.cuentaAtras.timeout.connect(self.displayTime)
+        self.count_down = QtCore.QTimer()
+        self.count_down.setInterval(1000)
+        self.count_down.timeout.connect(self.display_time)
 
-        self.camara = _camara
-        self.interfazArduino = _interfazArduino
-        self.rutaFotos = _rutaFotos
+        self.camera = _camera
+        self.arduino_interface = _arduino_interface
+        self.gallery_path = _gallery_path
 
-        self.cuenta = _cuenta
-        self.cuentaInicial = self.cuenta.property("text")
+        self.counter = _counter
+        self.initial_counter = self.counter.property("text")
 
-        self.titulo = _titulo
-        self.textoInicial = self.titulo.property("text")
+        self.title = _title
+        self.initial_text = self.title.property("text")
 
         self.img1 = _img1
         self.img2 = _img2
@@ -42,68 +43,61 @@ class manejoInterfaz:
         self.img4 = _img4
         self.dir_path = os.path.dirname(os.path.realpath(__file__))
 
-    def setRutaFotos(self, rutaNueva):
-        self.rutaFotos = rutaNueva
+    def set_gallery_path(self, _newPath):
+        self.gallery_path = _newPath
 
-    def cuentaAtrasStart(self):
-        self.cuentaAtras.start()
+    def start_count_down(self):
+        self.count_down.start()
 
-    # Actualizar la foto de la pantalla
-    def actualizarFoto(self):
-        # Glob muestra los archivos de un directorio, los ordenamos por sorted
-        # obtenemos la ruta de la imagen y la convertimos en string
+    def update_photo(self):
         url2 = self.img2.property("source").toString()
         url3 = self.img3.property("source").toString()
         url4 = self.img4.property("source").toString()
-        # Obtener la ultima foto subida
-        list_of_files = glob.glob(os.path.join((self.rutaFotos), "*"))
+        list_of_files = glob.glob(os.path.join(self.gallery_path, "*"))
         latest_file = max(list_of_files, key=os.path.getctime)
 
-        urlUltima = QUrl.fromLocalFile(os.path.join(self.dir_path, latest_file))
+        latest_url = QUrl.fromLocalFile(os.path.join(self.dir_path, latest_file))
         self.img1.setProperty("source", url2)
         self.img2.setProperty("source", url3)
         self.img3.setProperty("source", url4)
-        self.img4.setProperty("source", urlUltima)
+        self.img4.setProperty("source", latest_url)
 
-    # Mostrar o no la foto grande (Utilizado en la cuenta atras)
-    def cambiarFotoVisible(self):
+    def change_visible_photo(self):
         if self.img4.property("visible"):
             self.img4.setProperty("visible", False)
         else:
             self.img4.setProperty("visible", True)
 
-    # Cambiar el estado de los mensajes de camara y botonera no conectado
-    def camaraVisible(self):
-        self.camaraControl.setProperty("visible", False)
+    def visible_camera(self):
+        self.camera_control.setProperty("visible", False)
 
-    def botonVisible(self):
-        self.botonControl.setProperty("visible", False)
+    def visible_button(self):
+        self.buttonControl.setProperty("visible", False)
 
-    # Poner en marcha la cuenta atras para realizar la foto
-    def displayTime(self):
-        mensajeAntesFoto = "PATATA"
-        if (self.cuenta.property("text") == mensajeAntesFoto):
-            self.cuentaAtras.stop()
+    # Start countdown to take photo
+    def display_time(self):
+        message_before_photo = "PATATA"
+        if self.counter.property("text") == message_before_photo:
+            self.count_down.stop()
 
             try:
-
-                if (self.camara.hacerFoto()):
-                    self.actualizarFoto()
+                if self.camera.take_photo():
+                    self.update_photo()
             except:
                 print("")
             finally:
-                self.interfazArduino.escribirCaracter(b'c')
+                self.arduino_interface.write_character(b'c')
 
-            self.cambiarFotoVisible()
-            self.cuenta.setProperty("text", self.cuentaInicial)
-            self.titulo.setProperty("text", self.textoInicial)
-        elif (int(self.cuenta.property("text")) > 1):
-            self.cuenta.setProperty("text", (int(self.cuenta.property("text")) - 1))
-        elif (int(self.cuenta.property("text")) == 1):
-            self.cuenta.setProperty("text", mensajeAntesFoto)
+            self.change_visible_photo()
+            self.counter.setProperty("text", self.initial_counter)
+            self.title.setProperty("text", self.initial_text)
+        elif int(self.counter.property("text")) > 1:
+            self.counter.setProperty("text", (int(self.counter.property("text")) - 1))
+        elif int(self.counter.property("text")) == 1:
+            self.counter.setProperty("text", message_before_photo)
 
-    # Hacer la Foto
-    def hacerFoto(self):
-        self.titulo.setProperty("text", "PREPÁRATE")
-        self.cambiarFotoVisible()
-        self.cuentaAtrasStart()
+    # Take photo
+    def take_photo(self):
+        self.title.setProperty("text", "PREPÁRATE")
+        self.change_visible_photo()
+        self.start_count_down()

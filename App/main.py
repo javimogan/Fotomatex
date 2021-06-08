@@ -1,9 +1,6 @@
 #!/usr/bin/python3
 """
     Version 7.0
-
-            * Comprueba la conexion con la botonera y la camra como thread independientes
-
 """
 
 import sys
@@ -13,87 +10,84 @@ from PyQt5.QtQml import QQmlApplicationEngine
 from PyQt5.QtWidgets import QApplication
 
 from camara import Camara
-from interfaz import manejoInterfaz
-from interfazArduino import InterfazArduino
-from rutaFoto import Ruta
+from interfaz import InterfaceHandler
+from interfaceMicrocontroller import InterfaceMicrocontroller
+from rutaFoto import GalleryPath
 from variables import Variables
 
 
-class Inicio:
+class Fotomatex:
 
     def __init__(self):
-        self.rutaFotos = ''
-        self.variablesGlobales = Variables()
-        self.aplicacion = QApplication(sys.argv)
+        self.path_gallery = ''
+        self.global_variables = Variables()
+        self.application = QApplication(sys.argv)
         self.engine = QQmlApplicationEngine()
         self.win = None
-        self.iniciar()
+        self.start()
 
-        # Boton para cambiar ruta destino
-        self.seleccionRuta = Ruta(self.rutaFotos)
+        self.select_gallery_path = GalleryPath(self.path_gallery)
 
-        # 1 Comprobar que tenemos directorio para almacenar las fotos y preparar el click
-        self.prepararRuta()
-        self.rutaFotos = self.seleccionRuta.getRutaFotos()
+        # 1 Check that we have a directory to store the photos and prepare the click
+        self.prepare_path()
+        self.path_gallery = self.select_gallery_path.get_gallery_path()
 
-        # 2 Conexion serial
-        self.conexionSerie = InterfazArduino()
-        self.conexionSerie.emitirArduinoConectado.connect(self.arduinoConectado)
+        # 2 Serial connection
+        self.serial_connection = InterfaceMicrocontroller()
+        self.serial_connection.emit_microcontrollerIsConnected.connect(self.microcontroller_is_connected)
 
-        # 5 Camara
-        self.camara = None
-        self.camara = Camara(self.rutaFotos)
-        self.camara.emitirSignal.connect(self.camaraConectada)
+        # 3 Camera
+        self.camera = None
+        self.camera = Camara(self.path_gallery)
+        self.camera.emit_signal.connect(self.camera_is_connected)
 
-        # self.camara.conectarCamara()
 
-        # 3 Clase manejo de la interfaz
-        cuenta = self.win.findChild(QObject, "cuenta")
-        self.titulo = self.win.findChild(QObject, "titulo")
+        # 4 Interface handling
+        counter = self.win.findChild(QObject, "counter")
+        self.title = self.win.findChild(QObject, "title")
         img1 = self.win.findChild(QObject, "imagen1")
         img2 = self.win.findChild(QObject, "imagen2")
         img3 = self.win.findChild(QObject, "imagen3")
         img4 = self.win.findChild(QObject, "imagen4")
 
-        camaraControl = self.win.findChild(QObject, "controlCamara")
-        botonControl = self.win.findChild(QObject, "controlBoton")
+        camera_control = self.win.findChild(QObject, "controlCamara")
+        button_control = self.win.findChild(QObject, "controlBoton")
 
-        self.manejoInterfaz = manejoInterfaz(self.rutaFotos, self.camara, self.conexionSerie, self.titulo, cuenta, img1,
-                                             img2, img3, img4, camaraControl, botonControl)
+        self.interface_handler = InterfaceHandler(self.path_gallery, self.camera, self.serial_connection, self.title,
+                                                  counter, img1, img2, img3, img4, camera_control, button_control)
 
-        self.conexionSerie.emitirHacerFoto.connect(self.manejoInterfaz.hacerFoto)
+        self.serial_connection.emit_take_photo.connect(self.interface_handler.take_photo)
 
-        self.camara.start()
-        self.conexionSerie.start()
+        self.camera.start()
+        self.serial_connection.start()
 
-        # FIN
-        sys.exit(self.aplicacion.exec_())
+        # END
+        sys.exit(self.application.exec_())
 
-    def camaraConectada(self):
-        self.manejoInterfaz.camaraVisible()
+    def camera_is_connected(self):
+        self.interface_handler.visible_camera()
 
-    def arduinoConectado(self):
-        self.manejoInterfaz.botonVisible()
+    def microcontroller_is_connected(self):
+        self.interface_handler.visible_button()
 
-    def iniciar(self):
+    def start(self):
         context = self.engine.rootContext()
         context.setContextProperty("main", self.engine)
 
-        ruta = "%s%s" % (self.variablesGlobales.ruta, "./ui/main.qml")
+        ruta = "%s%s" % (self.global_variables.ruta, "./ui/main.qml")
         self.engine.load(ruta)
         self.win = self.engine.rootObjects()[0]
         self.win.show()
 
-    def prepararRuta(self):
-        # Comprobar si existe alguna ruta
-        self.seleccionRuta.cambiarRutaFotos()
-        self.win.findChild(QObject, "btnCambiarRuta").clicked.connect(self.setRutaFotos)
+    def prepare_path(self):
+        self.select_gallery_path.change_gallery_path()
+        self.win.findChild(QObject, "btnCambiarRuta").clicked.connect(self.set_gallery_path)
 
-    def setRutaFotos(self):
-        self.seleccionRuta.openFileNameDialog()
-        self.rutaFotos = self.seleccionRuta.cambiarRutaFotos()
-        self.camara.setRutaFotos(self.rutaFotos)
-        self.manejoInterfaz.setRutaFotos(self.rutaFotos)
+    def set_gallery_path(self):
+        self.select_gallery_path.open_file_name_dialog()
+        self.path_gallery = self.select_gallery_path.change_gallery_path()
+        self.camera.set_gallery_path(self.path_gallery)
+        self.interface_handler.set_gallery_path(self.path_gallery)
 
 
-p = Inicio()
+p = Fotomatex()
