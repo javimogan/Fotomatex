@@ -54,6 +54,7 @@ python3 App/main.py
 		style="float: left; margin-right: 10px;"
 	/>
 </p>
+
 # 🌚 About author
 <!-- About Author -->
 <table id="contributors">
