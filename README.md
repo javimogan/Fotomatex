@@ -48,7 +48,6 @@ python3 App/main.py
 		width=400
 		style="float: left; margin-right: 10px;"
 	/>
-
 	<img src="https://github.com/javimogan/Fotomatex/blob/main/img/stock.jpg?raw=true" 
 		alt="Fotomatex demo"
 		width=400
