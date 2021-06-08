@@ -14,6 +14,8 @@
 	style="float: left; margin-right: 10px;" />
 </p>
 
+**Fotomatex is an open source photo booth, which allows us to take pictures with a reflex camera when we press a button on a microcontroller such as Arduino and shows us the images taken on the screen.**
+
 ## Installation
 ### Desktop
 Fotomatex requires the following libraries to run.
