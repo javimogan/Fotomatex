@@ -8,17 +8,9 @@
 	style="float: left; margin-right: 10px;" />
 </p>
 <p align="center">
-<img src="https://github.com/javimogan/Fotomatex/blob/main/img/stock1.jpg?raw=true"
-	alt="Fotomatex demo"
-	width=350
-	style="float: left; margin-right: 10px;" />
 <img src="https://github.com/javimogan/Fotomatex/blob/main/img/demo.gif?raw=true"
 	alt="Fotomatex demo"
-	width=350
-	style="float: left; margin-right: 10px;" />
-	<img src="https://github.com/javimogan/Fotomatex/blob/main/img/stock.jpg?raw=true"
-	alt="Fotomatex demo"
-	width=350
+	width=400
 	style="float: left; margin-right: 10px;" />
 </p>
 
@@ -49,8 +41,20 @@ You can connect two LEDs, one indicating the unlocked state which allows you to 
 ```sh
 python3 App/main.py
 ```
+# Gallery
+<p align="center">
+	<img src="https://github.com/javimogan/Fotomatex/blob/main/img/stock1.jpg?raw=true"
+		alt="Fotomatex demo"
+		width=400
+		style="float: left; margin-right: 10px;"
+	/>
 
-
+	<img src="https://github.com/javimogan/Fotomatex/blob/main/img/stock.jpg?raw=true" 
+		alt="Fotomatex demo"
+		width=400
+		style="float: left; margin-right: 10px;"
+	/>
+</p>
 # 🌚 About author
 <!-- About Author -->
 <table id="contributors">
