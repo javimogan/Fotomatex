@@ -8,9 +8,9 @@
 	https://github.com/javimogan/Fotomatex
 
 */
-#define LED_LOCKED 6
-#define LED_UNLOCKED 7
-#define BUTTON 8
+#define LED_LOCKED 5
+#define LED_UNLOCKED 6
+#define BUTTON 7
 // If does not receive the command to unlock, do it in XXXX milliseconds
 #define MAX_LOCKED_TIME 8000
 
