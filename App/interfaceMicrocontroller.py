@@ -48,8 +48,8 @@ class InterfaceMicrocontroller(QtCore.QThread):
             connection_status = False
             while i < 10 and not connection_status:
                 try:
-                    path = '/dev/ttyUSB' + str(i)
-                    #path = '/dev/ttyACM' + str(i)
+                    #path = '/dev/ttyUSB' + str(i)
+                    path = '/dev/ttyACM' + str(i)
                     # Open the port to 115200 baud
                     self.serial_connection = serial.Serial(path, 115200, timeout=1.0)
                     connection_status = True

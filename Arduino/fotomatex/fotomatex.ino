@@ -8,9 +8,9 @@
 	https://github.com/javimogan/Fotomatex
 
 */
-#define LED_LOCKED D0
-#define LED_UNLOCKED D1
-#define BUTTON D8
+#define LED_LOCKED 2
+#define LED_UNLOCKED 3
+#define BUTTON 8
 // If does not receive the command to unlock, do it in XXXX milliseconds
 #define MAX_LOCKED_TIME 8000
 
@@ -23,7 +23,7 @@ void setup()
   pinMode(BUTTON, INPUT);
   pinMode(LED_LOCKED, OUTPUT);
   pinMode(LED_UNLOCKED, OUTPUT);
-
+  changeState();
   Serial.begin(115200);
 }
 
@@ -56,6 +56,13 @@ void unlock()
 // Change the state of the LEDs
 void changeState()
 {
+  /*if(locked){
+    digitalWrite(LED_LOCKED, 1);
+    digitalWrite(LED_UNLOCKED, 0);
+    }else{
+      digitalWrite(LED_LOCKED, 0);
+    digitalWrite(LED_UNLOCKED, 1);
+    }*/
   digitalWrite(LED_LOCKED, locked);
   digitalWrite(LED_UNLOCKED, !locked);
 }
